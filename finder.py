@@ -3,21 +3,18 @@ import os
 from PIL import Image
 import imagehash
 
-
 #find duplicates use dhash
 #add all duplicates (ones that occour after) to a list
 #delete all in the list if opted into 
 
 
-
 #create class for hashes and associated img name
 class hashed_img:
 
-	def __init__(self, name, hash):
-		self.hash = hash
+	def __init__(self, name, hash, path):
 		self.name = name
-		self.path = ""
-
+		self.hash = hash
+		self.path = path
 
 
 def hash(path):
@@ -40,7 +37,7 @@ def gen_list(path):
 	for i in files:
 
 		hash = imagehash.dhash(Image.open(path + i))
-		h_im = hashed_img(i, hash)
+		h_im = hashed_img(i, hash, path)
 		imgs.append(h_im)
 
 	return imgs
@@ -65,6 +62,10 @@ def compare(ims):
 	return dup
 
 
+def del_duplicates(dps):
+
+	for i in dps:
+		os.remove(i.path + i.name)
 
 
 
@@ -78,6 +79,5 @@ print("there are " + str(len(files)) + " files in this folder")
 
 sp = compare(files)
 
-print(" ")
-for x in sp:
-	print(x.name)
+#works correctly
+del_duplicates(sp)
