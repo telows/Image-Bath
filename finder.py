@@ -5,11 +5,8 @@ import imagehash
 
 
 #find duplicates use dhash
-#def dhash(image, hash_size=8):
-#must use pil image
-
-
-#hash = imagehash.average_hash(Image.open('test.png'))
+#add all duplicates (ones that occour after) to a list
+#delete all in the list if opted into 
 
 
 
@@ -22,26 +19,19 @@ class hashed_img:
 		self.path = ""
 
 
-#add all duplicates (ones that occour after) to a list
-#delete all in the list if opted into 
-
-
-
 
 def hash(path):
 	print(1)
 
 
-#open folder
-#save path
-#get all files in path
+
 #list strings with path + names
 def gen_list(path):
 	
 	files = os.listdir(path) #gives list of file names
 	imgs = []
 
-	#filter out webms and maybe gifs?
+	#filter out webms
 	for i in files:
 		if ".webm" in i:
 			files.remove(i)
@@ -60,14 +50,31 @@ def gen_list(path):
 
 def compare(ims):
 
-	t = 1
+	for i in ims:
+
+		if(ims.index(i) == len(ims)):
+			print("shoudl end")
+			return
+
+		n = ims.index(i) + 1
+
+		for x in ims[n:]:
+			if i.hash == x.hash:
+				print(i.name + " and " + x.name + " are duplicates")
+				#add to duplicate list
+
+		#return list of duplicates
+
 
 
 #path for test
-path = 'C:\\Users\\XPS\\Pictures\\test\\'
+path = 'C:\\Users\\XPS\\Pictures\\test2\\'
 
 files = gen_list(path)
 
-print(len(files))
+print("there are " + str(len(files)) + " files in this folder")
 
 compare(files)
+
+
+
