@@ -50,31 +50,34 @@ def gen_list(path):
 
 def compare(ims):
 
-	for i in ims:
+	dup = []
 
-		if(ims.index(i) == len(ims)):
-			print("shoudl end")
-			return
+	for i in ims:
 
 		n = ims.index(i) + 1
 
 		for x in ims[n:]:
 			if i.hash == x.hash:
 				print(i.name + " and " + x.name + " are duplicates")
-				#add to duplicate list
+				dup.append(x)
+				ims.remove(x)
 
-		#return list of duplicates
+	return dup
+
+
 
 
 
 #path for test
 path = 'C:\\Users\\XPS\\Pictures\\test2\\'
 
+
 files = gen_list(path)
 
 print("there are " + str(len(files)) + " files in this folder")
 
-compare(files)
+sp = compare(files)
 
-
-
+print(" ")
+for x in sp:
+	print(x.name)
