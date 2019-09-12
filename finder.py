@@ -2,6 +2,7 @@
 import os
 from PIL import Image
 import imagehash
+import sys
 
 #find duplicates use dhash
 #add all duplicates (ones that occour after) to a list
@@ -69,15 +70,28 @@ def del_duplicates(dps):
 
 
 
-#path for test
-path = 'C:\\Users\\XPS\\Pictures\\test2\\'
+def main():
+
+	#argv[1] = path 2+ = other options
+	path = sys.argv[1]
+
+	#for testing
+	#path = 'C:\\Users\\XPS\\Pictures\\test2\\'
+	#path = 'C:\\Users\\XPS\\Pictures\\test\\'
+	path = 'C:\\Users\\XPS\\Pictures\\gems\\'
+
+	files = gen_list(path)
+
+	#make this optional?
+	print("there are " + str(len(files)) + " files in this folder")
+
+	#make print dups an option?
+	dups = compare(files)
+
+	if "-d" in sys.argv:
+		del_duplicates(dups)
+		#print("-d found")
 
 
-files = gen_list(path)
-
-print("there are " + str(len(files)) + " files in this folder")
-
-sp = compare(files)
-
-#works correctly
-del_duplicates(sp)
+#main cunction call
+main()
