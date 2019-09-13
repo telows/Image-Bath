@@ -3,8 +3,9 @@ import os
 from PIL import Image
 import imagehash
 import sys
+import time
 
-#find duplicates use dhash
+#find duplicates use dhash phash may be more accurate, but slower
 #add all duplicates (ones that occour after) to a list
 #delete all in the list if opted into 
 
@@ -18,12 +19,13 @@ class hashed_img:
 		self.path = path
 
 
+#for c++ hash implementation
 def hash(path):
 	print(1)
 
 
-
 #list strings with path + names
+#super slow
 def gen_list(path):
 	
 	files = os.listdir(path) #gives list of file names
@@ -45,7 +47,6 @@ def gen_list(path):
 
 
 
-
 def compare(ims):
 
 	dup = []
@@ -56,15 +57,17 @@ def compare(ims):
 
 		for x in ims[n:]:
 			if i.hash == x.hash:
-				print(i.name + " and " + x.name + " are duplicates")
+				#may change for speed
+				if "-pd" in sys.argv:
+					print(i.name + " and " + x.name + " are duplicates")
 				dup.append(x)
 				ims.remove(x)
 
 	return dup
 
 
-def del_duplicates(dps):
 
+def del_duplicates(dps):
 	for i in dps:
 		os.remove(i.path + i.name)
 
@@ -72,26 +75,62 @@ def del_duplicates(dps):
 
 def main():
 
-	#argv[1] = path 2+ = other options
-	path = sys.argv[1]
+	start_time = time.time()
+	#add check for path existing
+	#path = sys.argv[1]
 
 	#for testing
 	#path = 'C:\\Users\\XPS\\Pictures\\test2\\'
 	#path = 'C:\\Users\\XPS\\Pictures\\test\\'
 	path = 'C:\\Users\\XPS\\Pictures\\gems\\'
 
+	#add finding folder option
+
+	#takes 22.7 secs on 880 files
 	files = gen_list(path)
 
-	#make this optional?
-	print("there are " + str(len(files)) + " files in this folder")
+	#print(time.time() - start_time)
 
-	#make print dups an option?
+	if "-s" in sys.argv:
+		print("there are " + str(len(files)) + " files in this folder")
+
+	#print(time.time() - start_time)
+
+	#takes 3.9 secs on 880 files
 	dups = compare(files)
 
+	#add num of dups 
+	if "-nd" in sys.argv:
+		print("there are " + str(len(dups)) + " duplicate images")
+	
 	if "-d" in sys.argv:
-		del_duplicates(dups)
-		#print("-d found")
+		#del_duplicates(dups)
+		print("-d found")
+
+	if "-t" in sys.argv:
+		print(str(time.time() - start_time) + " seconds")
 
 
-#main cunction call
 main()
+
+
+
+# **TODO LIST**
+#add timer and additional flags
+#add option to explore folders in given path
+'''
+-a for all folders in path go in every folder in the path
+make a find folder function
+
+implement hash in c++ will be faster?
+create duplicate class that gives file and all its duplicates - useful for -a implementation
+'''
+
+#DONE LIST
+'''
+-s for number of files #done
+-d for delete duplicates #done
+-t for timer #done
+-pd to print duplicates #done (may improve if dup class made)
+-nd number of duplicates #done
+'''
