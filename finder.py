@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 
 import os
 from PIL import Image
@@ -19,6 +20,17 @@ class hashed_img:
 		self.path = path
 
 
+class duplicates:
+
+	def __init_(self, name, path, dups):
+		self.name = name
+		self.path = path
+		#dups should be a list of images that are duplicates
+		#will need to change -d and -pd for this
+		self.dups = dups
+
+
+
 #for c++ hash implementation
 def hash(path):
 	print(1)
@@ -28,10 +40,19 @@ def hash(path):
 #super slow
 def gen_list(path):
 	
-	files = os.listdir(path) #gives list of file names
+	 #gives list of file names
+	files = []
+	if "-a" in sys.argv:
+		files = subdir_files(path)
+	else:
+		#files = os.listdir(path)
+		for f in os.listdir(path):
+			if os.path.isfile(path + f) is True:
+				files.append(f)
+
 	imgs = []
 
-	#filter out webms
+	#filter out webms may need to adjust to filter out non img files
 	for i in files:
 		if ".webm" in i:
 			files.remove(i)
@@ -39,12 +60,27 @@ def gen_list(path):
 	#hash images, and create hashed image objs
 	for i in files:
 
+		#ISSUE with -a command since does not have additional path part
 		hash = imagehash.dhash(Image.open(path + i))
 		h_im = hashed_img(i, hash, path)
 		imgs.append(h_im)
 
 	return imgs
 
+
+
+#for -a implementation
+def subdir_files(path):
+
+	f = []
+	for root, dirs, files in os.walk(path):
+		for file in files:
+			if os.path.isfile(root + "\\" + file) is True:
+				f.append(file)
+
+	#need to make individual paths for files in inner folders
+	print(f)
+	return f
 
 
 def compare(ims):
@@ -80,9 +116,9 @@ def main():
 	#path = sys.argv[1]
 
 	#for testing
-	#path = 'C:\\Users\\XPS\\Pictures\\test2\\'
+	path = 'C:\\Users\\XPS\\Pictures\\test2\\'
 	#path = 'C:\\Users\\XPS\\Pictures\\test\\'
-	path = 'C:\\Users\\XPS\\Pictures\\gems\\'
+	#path = 'C:\\Users\\XPS\\Pictures\\gems\\'
 
 	#add finding folder option
 
@@ -113,14 +149,18 @@ def main():
 
 main()
 
+#execute command
+#os.system("command")
 
 
 # **TODO LIST**
 #add timer and additional flags
 #add option to explore folders in given path
 '''
--a for all folders in path go in every folder in the path
+-a for all folders in path go in every folder in the path (use -af?)
+
 make a find folder function
+-ph use phash instead of dhash for more accuracy
 
 implement hash in c++ will be faster?
 create duplicate class that gives file and all its duplicates - useful for -a implementation
