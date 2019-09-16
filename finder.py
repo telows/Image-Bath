@@ -17,6 +17,7 @@ class hashed_img:
 	def __init__(self, name, hash, path):
 		self.name = name
 		self.hash = hash
+		#self.hash
 		self.path = path
 
 
@@ -76,7 +77,8 @@ def subdir_files(path):
 	for root, dirs, files in os.walk(path):
 		for file in files:
 			if os.path.isfile(root + "\\" + file) is True:
-				f.append(file)
+				f.append(root[len(path):] + "\\" + file)
+				#print()
 
 	#need to make individual paths for files in inner folders
 	print(f)
@@ -125,12 +127,9 @@ def main():
 	#takes 22.7 secs on 880 files
 	files = gen_list(path)
 
-	#print(time.time() - start_time)
-
 	if "-s" in sys.argv:
 		print("there are " + str(len(files)) + " files in this folder")
 
-	#print(time.time() - start_time)
 
 	#takes 3.9 secs on 880 files
 	dups = compare(files)
