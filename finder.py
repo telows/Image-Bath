@@ -5,6 +5,7 @@ from PIL import Image
 import imagehash
 import sys
 import time
+import re
 
 #find duplicates use dhash phash may be more accurate, but slower
 #add all duplicates (ones that occour after) to a list
@@ -41,7 +42,7 @@ def hash(path):
 #super slow
 def gen_list(path):
 	
-	 #gives list of file names
+	#gives list of file names
 	files = []
 	if "-a" in sys.argv:
 		files = subdir_files(path)
@@ -58,12 +59,16 @@ def gen_list(path):
 		if ".webm" in i:
 			files.remove(i)
 
+	#regex for finding name in file path
+	rename = "(.*\.[a-z]{3,5})"
+
 	#hash images, and create hashed image objs
 	for i in files:
 
-		#ISSUE with -a command since does not have additional path part
+		name = re.match(rename, i).group()
+
 		hash = imagehash.dhash(Image.open(path + i))
-		h_im = hashed_img(i, hash, path)
+		h_im = hashed_img(name, hash, path + i)
 		imgs.append(h_im)
 
 	return imgs
@@ -81,7 +86,6 @@ def subdir_files(path):
 				#print()
 
 	#need to make individual paths for files in inner folders
-	print(f)
 	return f
 
 
@@ -125,6 +129,7 @@ def main():
 	#add finding folder option
 
 	#takes 22.7 secs on 880 files
+	#gives list of hashed imgs
 	files = gen_list(path)
 
 	if "-s" in sys.argv:
@@ -156,7 +161,7 @@ main()
 #add timer and additional flags
 #add option to explore folders in given path
 '''
--a for all folders in path go in every folder in the path (use -af?)
+redo file finding with -a for more efficency
 
 make a find folder function
 -ph use phash instead of dhash for more accuracy
@@ -172,4 +177,5 @@ create duplicate class that gives file and all its duplicates - useful for -a im
 -t for timer #done
 -pd to print duplicates #done (may improve if dup class made)
 -nd number of duplicates #done
+fix -a to not save folder extension, and make image classes after finding the file
 '''
