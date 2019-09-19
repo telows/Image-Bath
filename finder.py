@@ -5,11 +5,7 @@ from PIL import Image
 import imagehash
 import sys
 import time
-import re
 
-#find duplicates use dhash phash may be more accurate, but slower
-#add all duplicates (ones that occour after) to a list
-#delete all in the list if opted into 
 
 
 #create class for hashes and associated img name
@@ -39,12 +35,15 @@ class duplicates:
 def hash(path):
 	print(1)
 
+#python implementation of dhash **default**
 def py_dhash(path):
-
 	hash = imagehash.dhash(Image.open(path))
 	return hash
 
 #add other hashing algos 
+def py_phash(path):
+	hash = imagehash.phash(Image.open(path))
+	return hash
 
 
 #returns list of hashed imgs
@@ -58,18 +57,18 @@ def gen_list(path):
 	else:
 		imgs = get_ims(path)
 
+	#check if folder is empty
+	#if size(imgs) is 0:
+		#exit(1)
 
 	#filter out webms may need to adjust to filter out non img files
+	#rework into single function call? imgs = filter()
 	for i in imgs:
 		if ".webm" in i.name:
 			imgs.remove(i)
 
-	#hash images, and create hashed image objs
-	#make option for diff hashing algos here
-	for i in imgs:
-		#need to expand to other hashing algos
-		hash = py_dhash(i.path)
-		i.add_hash(hash)
+	#hash images, and add the hash to each object
+	imgs = hash_images(imgs)
 
 	return imgs
 
@@ -79,8 +78,8 @@ def get_ims(path):
 	ims = []
 	for f in os.listdir(path):
 			if os.path.isfile(path + f) is True:
-				im = hashed_img(f, path + f)
-				ims.append(im)
+				h_im = hashed_img(f, path + f)
+				ims.append(h_im)
 
 	return ims
 
@@ -98,6 +97,21 @@ def subdir_files(path):
 	return ims
 
 
+#function to hash list of hashed_imgs
+def hash_images(imgs):
+	#need to expand to other hashing algos based on flags
+	if "-ph" in sys.argv:
+		for i in imgs:
+			hash = py_phash(i.path)
+			i.add_hash(hash)
+	else:
+		for i in imgs:
+			hash = py_dhash(i.path)
+			i.add_hash(hash)
+
+	return imgs
+
+#compares image hashes and returns duplicates
 def compare(ims):
 
 	dup = []
@@ -108,7 +122,7 @@ def compare(ims):
 
 		for x in ims[n:]:
 			if i.hash == x.hash:
-				#may change for speed
+				#CHANGE FOR SPEED
 				if "-pd" in sys.argv:
 					print(i.name + " and " + x.name + " are duplicates")
 				dup.append(x)
@@ -119,7 +133,7 @@ def compare(ims):
 	return dup
 
 
-
+#deletes duplicates
 def del_duplicates(dps):
 	for i in dps:
 		os.remove(i.path)
@@ -169,24 +183,23 @@ main()
 
 
 # **TODO LIST**
-#add timer and additional flags
-#add option to explore folders in given path
 '''
-redo file finding with -a for more efficency
-
 make a find folder function
--ph use phash instead of dhash for more accuracy
+
+make filter function in imgs creator
+make empty list check for error control
 
 implement hash in c++ will be faster?
-create duplicate class that gives file and all its duplicates - useful for -a implementation
+create duplicate class that gives file and all its duplicates - useful for -pd -nd -d implementations
 '''
 
-#DONE LIST
+#FlAG LIST
 '''
+-ph use phash instead of dhash for more accuracy
 -s for number of files #done
 -d for delete duplicates #done
 -t for timer #done
--pd to print duplicates #done (may improve if dup class made)
+-pd to print duplicates #done (may improve when dup class made)
 -nd number of duplicates #done
-fix -a to not save folder extension, and make image classes after finding the file
+-a to go through folders
 '''
