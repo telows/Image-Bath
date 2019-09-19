@@ -15,11 +15,13 @@ import re
 #create class for hashes and associated img name
 class hashed_img:
 
-	def __init__(self, name, hash, path):
+	def __init__(self, name, path):
 		self.name = name
-		self.hash = hash
-		#self.hash
+		self.hash = None
 		self.path = path
+
+	def add_hash(self, hash):
+		self.hash = hash
 
 
 class duplicates:
@@ -37,56 +39,63 @@ class duplicates:
 def hash(path):
 	print(1)
 
+def py_dhash(path):
 
-#list strings with path + names
+	hash = imagehash.dhash(Image.open(path))
+	return hash
+
+#add other hashing algos 
+
+
+#returns list of hashed imgs
 #super slow
 def gen_list(path):
 	
-	#gives list of file names
-	files = []
-	if "-a" in sys.argv:
-		files = subdir_files(path)
-	else:
-		#files = os.listdir(path)
-		for f in os.listdir(path):
-			if os.path.isfile(path + f) is True:
-				files.append(f)
-
+	#gives list h_ims w/ no hash
 	imgs = []
+	if "-a" in sys.argv:
+		imgs = subdir_files(path)
+	else:
+		imgs = get_ims(path)
+
 
 	#filter out webms may need to adjust to filter out non img files
-	for i in files:
-		if ".webm" in i:
-			files.remove(i)
-
-	#regex for finding name in file path
-	rename = "(.*\.[a-z]{3,5})"
+	for i in imgs:
+		if ".webm" in i.name:
+			imgs.remove(i)
 
 	#hash images, and create hashed image objs
-	for i in files:
-
-		name = re.match(rename, i).group()
-
-		hash = imagehash.dhash(Image.open(path + i))
-		h_im = hashed_img(name, hash, path + i)
-		imgs.append(h_im)
+	#make option for diff hashing algos here
+	for i in imgs:
+		#need to expand to other hashing algos
+		hash = py_dhash(i.path)
+		i.add_hash(hash)
 
 	return imgs
 
+#gen list helper function no -a flag
+def get_ims(path):
+
+	ims = []
+	for f in os.listdir(path):
+			if os.path.isfile(path + f) is True:
+				im = hashed_img(f, path + f)
+				ims.append(im)
+
+	return ims
 
 
-#for -a implementation
+#gen list helper function, -a implementation
 def subdir_files(path):
 
-	f = []
+	ims = []
 	for root, dirs, files in os.walk(path):
 		for file in files:
 			if os.path.isfile(root + "\\" + file) is True:
-				f.append(root[len(path):] + "\\" + file)
-				#print()
+				h_im = hashed_img(file, root + "\\" + file)
+				ims.append(h_im)
 
-	#need to make individual paths for files in inner folders
-	return f
+	return ims
 
 
 def compare(ims):
@@ -105,13 +114,15 @@ def compare(ims):
 				dup.append(x)
 				ims.remove(x)
 
+	#make alternate for -pd flag to improve speed
+
 	return dup
 
 
 
 def del_duplicates(dps):
 	for i in dps:
-		os.remove(i.path + i.name)
+		os.remove(i.path)
 
 
 
