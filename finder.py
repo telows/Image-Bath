@@ -61,11 +61,8 @@ def gen_list(path):
 	#if size(imgs) is 0:
 		#exit(1)
 
-	#filter out webms may need to adjust to filter out non img files
-	#rework into single function call? imgs = filter()
-	for i in imgs:
-		if ".webm" in i.name:
-			imgs.remove(i)
+	#filter out bad file types webms may need to adjust to filter out non img files
+	imgs = filter(imgs)
 
 	#hash images, and add the hash to each object
 	imgs = hash_images(imgs)
@@ -95,6 +92,16 @@ def subdir_files(path):
 				ims.append(h_im)
 
 	return ims
+
+
+#filters out not compatible image types
+def filter(imgs):
+
+	#may need to adjust to filter out more file types
+	for i in imgs:
+		if ".webm" in i.name:
+			imgs.remove(i)
+	return imgs
 
 
 #function to hash list of hashed_imgs
@@ -133,7 +140,18 @@ def compare(ims):
 	return dup
 
 
-#deletes duplicates
+#attempts to find folder path if user does not know
+def find_folder(goal, path = "\\"):
+	for r, dirs, file in os.walk(path):
+		if goal in r:
+			return r
+
+	#if not found call exit
+	return "not found"
+
+
+
+#deletes duplicates for -d flag
 def del_duplicates(dps):
 	for i in dps:
 		os.remove(i.path)
@@ -184,9 +202,7 @@ main()
 
 # **TODO LIST**
 '''
-make a find folder function
-
-make filter function in imgs creator
+make a find folder function -curr
 make empty list check for error control
 
 implement hash in c++ will be faster?
@@ -201,5 +217,5 @@ create duplicate class that gives file and all its duplicates - useful for -pd -
 -t for timer #done
 -pd to print duplicates #done (may improve when dup class made)
 -nd number of duplicates #done
--a to go through folders
+-a to go through folders #done
 '''
