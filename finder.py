@@ -161,8 +161,15 @@ def del_duplicates(dps):
 def main():
 
 	start_time = time.time()
-	#add check for path existing
-	#path = sys.argv[1]
+
+	#check for find folder
+	if os.path.isdir(sys.argv[1]):
+		path = sys.argv[1]
+	else:
+		path = find_folder(sys.argv[1])
+
+		if path == "not found":
+			exit(1)
 
 	#for testing
 	path = 'C:\\Users\\XPS\\Pictures\\test2\\'
