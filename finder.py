@@ -135,7 +135,15 @@ def compare(ims):
 				dup.append(x)
 				ims.remove(x)
 
+
+								
+
 	#make alternate for -pd flag to improve speed
+	if "-pd" in sys.argv:
+		for i in dup:
+			print(1)
+			#refactor with dup class
+
 
 	return dup
 
@@ -173,10 +181,7 @@ def main():
 
 	#for testing
 	path = 'C:\\Users\\XPS\\Pictures\\test2\\'
-	#path = 'C:\\Users\\XPS\\Pictures\\test\\'
-	#path = 'C:\\Users\\XPS\\Pictures\\gems\\'
 
-	#add finding folder option
 
 	#takes 22.7 secs on 880 files
 	#gives list of hashed imgs
@@ -203,14 +208,11 @@ def main():
 
 main()
 
-#execute command
-#os.system("command")
-
 
 # **TODO LIST**
 '''
-make a find folder function -curr
 make empty list check for error control
+split into multiple files for easier managment
 
 implement hash in c++ will be faster?
 create duplicate class that gives file and all its duplicates - useful for -pd -nd -d implementations
